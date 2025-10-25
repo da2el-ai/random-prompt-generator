@@ -1,0 +1,22 @@
+{
+  "name": "random-prompt-generator",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": "https://github.com/da2el-ai/random-prompt-generator.git",
+  "author": "da2el <hirosyg.picasa@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}
