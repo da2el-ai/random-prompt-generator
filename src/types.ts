@@ -17,9 +17,10 @@ export interface TagGroup {
 export interface GenerationOptions {
   outputCount: number;
   escapeParentheses: boolean; // ()を\(\)に変換
-  replaceSpaces: boolean; // 空白を_に変換
+  spaceConversion: 'space-to-underscore' | 'underscore-to-space' | 'none'; // 空白変換オプション
   addArtistPrefix: boolean; // 先頭にartist:を付与
   insertBlankLines: boolean; // 生成結果に空行を挿入
+  addTrailingComma: boolean; // 末尾に,を追加
 }
 
 // アプリケーションの状態

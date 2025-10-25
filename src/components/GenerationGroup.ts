@@ -3,9 +3,10 @@ export class GenerationGroup {
   private resultTextarea!: HTMLTextAreaElement;
   private outputCountInput!: HTMLInputElement;
   private escapeParenthesesCheckbox!: HTMLInputElement;
-  private replaceSpacesCheckbox!: HTMLInputElement;
+  private spaceConversionSelect!: HTMLSelectElement;
   private artistPrefixCheckbox!: HTMLInputElement;
   private insertBlankLinesCheckbox!: HTMLInputElement;
+  private addTrailingCommaCheckbox!: HTMLInputElement;
   private generateButton!: HTMLButtonElement;
   private copyButton!: HTMLButtonElement;
   private clearButton!: HTMLButtonElement;
@@ -34,6 +35,12 @@ export class GenerationGroup {
     this.resultTextarea.placeholder = '生成されたプロンプトがここに表示されます...';
     this.resultTextarea.readOnly = true;
 
+    // 生成ボタン
+    this.generateButton = document.createElement('button');
+    this.generateButton.className = 'w-full px-4 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors font-medium';
+    this.generateButton.textContent = 'プロンプト生成';
+    this.generateButton.addEventListener('click', () => this.onGenerateClick());
+
     this.copyButton = document.createElement('button');
     this.copyButton.className = 'mt-2 mr-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors';
     this.copyButton.textContent = '生成結果をコピー';
@@ -50,8 +57,11 @@ export class GenerationGroup {
 
     leftSection.appendChild(resultLabel);
     leftSection.appendChild(this.resultTextarea);
+    leftSection.appendChild(this.generateButton);
     leftSection.appendChild(buttonContainer);
 
+    ////////////////////////////////
+    ////////////////////////////////
     // 右側：オプション
     const rightSection = document.createElement('div');
     rightSection.className = 'space-y-4';
@@ -94,19 +104,22 @@ export class GenerationGroup {
 
     // 空白変換
     const spacesDiv = document.createElement('div');
-    spacesDiv.className = 'flex items-center';
-    this.replaceSpacesCheckbox = document.createElement('input');
-    this.replaceSpacesCheckbox.type = 'checkbox';
-    this.replaceSpacesCheckbox.id = 'replace-spaces';
-    this.replaceSpacesCheckbox.className = 'h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded';
-
+    spacesDiv.className = 'flex flex-col';
+    
     const spacesLabel = document.createElement('label');
-    spacesLabel.htmlFor = 'replace-spaces';
-    spacesLabel.className = 'ml-2 text-sm text-gray-700';
-    spacesLabel.innerHTML = '空白を<code>_</code>に変換';
+    spacesLabel.className = 'block text-sm font-medium text-gray-700 mb-1';
+    spacesLabel.textContent = '空白変換';
 
-    spacesDiv.appendChild(this.replaceSpacesCheckbox);
+    this.spaceConversionSelect = document.createElement('select');
+    this.spaceConversionSelect.className = 'w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500';
+    this.spaceConversionSelect.innerHTML = `
+      <option value="none">変換しない</option>
+      <option value="space-to-underscore">空白を_に変換</option>
+      <option value="underscore-to-space">_を空白に変換</option>
+    `;
+
     spacesDiv.appendChild(spacesLabel);
+    spacesDiv.appendChild(this.spaceConversionSelect);
 
     // artist:プレフィックス
     const artistDiv = document.createElement('div');
@@ -141,20 +154,30 @@ export class GenerationGroup {
     blankLinesDiv.appendChild(this.insertBlankLinesCheckbox);
     blankLinesDiv.appendChild(blankLinesLabel);
 
-    checkboxDiv.appendChild(escapeDiv);
+    // 末尾カンマ
+    const trailingCommaDiv = document.createElement('div');
+    trailingCommaDiv.className = 'flex items-center';
+    this.addTrailingCommaCheckbox = document.createElement('input');
+    this.addTrailingCommaCheckbox.type = 'checkbox';
+    this.addTrailingCommaCheckbox.id = 'add-trailing-comma';
+    this.addTrailingCommaCheckbox.className = 'h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded';
+
+    const trailingCommaLabel = document.createElement('label');
+    trailingCommaLabel.htmlFor = 'add-trailing-comma';
+    trailingCommaLabel.className = 'ml-2 text-sm text-gray-700';
+    trailingCommaLabel.innerHTML = '末尾に<code>,</code>を追加';
+
+    trailingCommaDiv.appendChild(this.addTrailingCommaCheckbox);
+    trailingCommaDiv.appendChild(trailingCommaLabel);
+
     checkboxDiv.appendChild(spacesDiv);
+    checkboxDiv.appendChild(escapeDiv);
     checkboxDiv.appendChild(artistDiv);
     checkboxDiv.appendChild(blankLinesDiv);
-
-    // 生成ボタン
-    this.generateButton = document.createElement('button');
-    this.generateButton.className = 'w-full px-4 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors font-medium';
-    this.generateButton.textContent = 'プロンプト生成';
-    this.generateButton.addEventListener('click', () => this.onGenerateClick());
+    checkboxDiv.appendChild(trailingCommaDiv);
 
     rightSection.appendChild(outputCountDiv);
     rightSection.appendChild(checkboxDiv);
-    rightSection.appendChild(this.generateButton);
 
     content.appendChild(leftSection);
     content.appendChild(rightSection);
@@ -199,9 +222,10 @@ export class GenerationGroup {
     return {
       outputCount: parseInt(this.outputCountInput.value) || 5,
       escapeParentheses: this.escapeParenthesesCheckbox.checked,
-      replaceSpaces: this.replaceSpacesCheckbox.checked,
+      spaceConversion: this.spaceConversionSelect.value as 'space-to-underscore' | 'underscore-to-space' | 'none',
       addArtistPrefix: this.artistPrefixCheckbox.checked,
-      insertBlankLines: this.insertBlankLinesCheckbox.checked
+      insertBlankLines: this.insertBlankLinesCheckbox.checked,
+      addTrailingComma: this.addTrailingCommaCheckbox.checked
     };
   }
 
@@ -212,14 +236,17 @@ export class GenerationGroup {
     if (typeof options.escapeParentheses === 'boolean') {
       this.escapeParenthesesCheckbox.checked = options.escapeParentheses;
     }
-    if (typeof options.replaceSpaces === 'boolean') {
-      this.replaceSpacesCheckbox.checked = options.replaceSpaces;
+    if (typeof options.spaceConversion === 'string') {
+      this.spaceConversionSelect.value = options.spaceConversion;
     }
     if (typeof options.addArtistPrefix === 'boolean') {
       this.artistPrefixCheckbox.checked = options.addArtistPrefix;
     }
     if (typeof options.insertBlankLines === 'boolean') {
       this.insertBlankLinesCheckbox.checked = options.insertBlankLines;
+    }
+    if (typeof options.addTrailingComma === 'boolean') {
+      this.addTrailingCommaCheckbox.checked = options.addTrailingComma;
     }
   }
 

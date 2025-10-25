@@ -43,9 +43,10 @@ export function createDefaultState(): AppState {
   const defaultOptions: GenerationOptions = {
     outputCount: 5,
     escapeParentheses: false,
-    replaceSpaces: false,
+    spaceConversion: 'none',
     addArtistPrefix: false,
-    insertBlankLines: true
+    insertBlankLines: true,
+    addTrailingComma: false
   };
 
   return {

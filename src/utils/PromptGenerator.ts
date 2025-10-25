@@ -41,7 +41,14 @@ export class PromptGenerator {
     }
 
     // カンマ区切りで結合
-    return selectedTags.join(', ');
+    let prompt = selectedTags.join(', ');
+    
+    // 末尾にカンマを追加
+    if (options.addTrailingComma) {
+      prompt += ',';
+    }
+    
+    return prompt;
   }
 
   /**

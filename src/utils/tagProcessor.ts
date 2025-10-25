@@ -21,10 +21,13 @@ export function transformTag(tag: string, options: GenerationOptions): string {
     transformedTag = `artist:${transformedTag}`;
   }
 
-  // 空白を_に変換
-  if (options.replaceSpaces) {
+  // 空白変換処理
+  if (options.spaceConversion === 'space-to-underscore') {
     transformedTag = transformedTag.replace(/\s+/g, '_');
+  } else if (options.spaceConversion === 'underscore-to-space') {
+    transformedTag = transformedTag.replace(/_/g, ' ');
   }
+  // 'none'の場合は何もしない
 
   // ()を\(\)に変換
   if (options.escapeParentheses) {
