@@ -1,6 +1,6 @@
 {
   "name": "random-prompt-generator",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -13,10 +13,14 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^24.9.1",
+    "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^3",
     "typescript": "^5.9.3",
     "vite": "^7.1.12"
+  },
+  "dependencies": {
+    "vue": "3"
   }
 }

@@ -31,3 +31,23 @@ export interface AppState {
   generationOptions: GenerationOptions;
   generatedPrompts: string[];
 }
+
+// Vue3コンポーネント用の追加型定義
+export interface TagGroupProps {
+  groupNumber: number;
+  modelValue: TagGroup;
+}
+
+export interface TagGroupEmits {
+  (e: 'update:modelValue', value: TagGroup): void;
+}
+
+export interface GenerationGroupProps {
+  modelValue: GenerationOptions;
+  generatedPrompts?: string[];
+}
+
+export interface GenerationGroupEmits {
+  (e: 'update:modelValue', value: GenerationOptions): void;
+  (e: 'generate'): void;
+}
