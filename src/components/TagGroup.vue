@@ -97,6 +97,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { TagGroup } from '../types'
+import { PromptGenerator } from '../utils/PromptGenerator'
 
 interface Props {
   groupNumber: number
@@ -136,7 +137,7 @@ if (props.groupNumber === 1 && props.modelValue.minCount === 0) {
 }
 
 const tagGroupData = computed((): TagGroup => ({
-  tags: tags.value.split('\n').filter(tag => tag.trim().length > 0),
+  tags: PromptGenerator.parseTagsFromText(tags.value),
   minCount: minCount.value,
   maxCount: maxCount.value,
   minWeight: minWeight.value,

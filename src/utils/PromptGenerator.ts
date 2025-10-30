@@ -19,7 +19,8 @@ export class PromptGenerator {
 
     // 各タググループから必要な数のタグを選択
     for (const group of tagGroups) {
-      const tags = this.parseTagsFromText(group.tags);
+      // const tags = this.parseTagsFromText(group.tags);
+      const tags = group.tags;
       if (tags.length === 0) continue;
 
       // ランダムな個数を決定
@@ -71,16 +72,16 @@ export class PromptGenerator {
   /**
    * テキストエリアの内容からタグの配列を作成
    */
-  private static parseTagsFromText(tagsText: string[]): string[] {
-    if (Array.isArray(tagsText)) {
-      return tagsText;
-    }
-    
-    // 文字列の場合は改行で分割
-    const text = tagsText as unknown as string;
-    return text
+  static parseTagsFromText(tagsText: string): string[] {
+    return tagsText
       .split('\n')
-      .map(line => line.trim())
+      .map(line => {
+        // 前後の空白とカンマを同時に削除
+        line = line.replace(/^[\s,]+/, ''); // 先頭の空白とカンマを削除
+        line = line.replace(/[\s,]+$/, ''); // 末尾の空白とカンマを削除
+        console.log(line);
+        return line;
+      })
       .filter(line => line.length > 0);
   }
 }
